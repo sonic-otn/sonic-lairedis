@@ -2,6 +2,7 @@
 #include "LinecardState.h"
 #include "RealObjectIdManager.h"
 #include "LinecardStateBase.h"
+#include "OAEmulator.h"
 #include "RealObjectIdManager.h"
 #include "EventPayloadNetLinkMsg.h"
 
@@ -304,6 +305,12 @@ lai_status_t LinecardState::getStatsExt(
             {
                 counters[i].d64 = (double)(it->second);
             }
+        }
+
+        if (object_type == LAI_OBJECT_TYPE_OA)
+        {
+            OAHandler->getOAStats(counter_ids[i], counters[i], localcounters);
+            localcounters = OAHandler->localcounters;
         }
     }
 

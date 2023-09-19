@@ -392,6 +392,15 @@ lai_status_t LinecardStateBase::create_internal(
             meta = lai_metadata_get_attr_metadata(object_type, id);
         }
 
+        if (object_type == LAI_OBJECT_TYPE_OA)
+        {
+            OAHandler = std::make_shared<laivs::OAEmulator>();
+            send_linecard_alarm_notification(0x100000000, OAHandler->OA_alarm_type, OAHandler->OA_alarm_info);
+            auto &attrHash = m_objectHash[LAI_OBJECT_TYPE_OA][serializedObjectId];
+            attrHash = OAHandler->attrHash;
+            OAHandler->OA_alarm_type = LAI_ALARM_TYPE_MAX;
+        }
+
         if (object_type == LAI_OBJECT_TYPE_OTDR)
         {
             attr.id = LAI_OTDR_ATTR_SCANNING_STATUS;
@@ -496,6 +505,14 @@ lai_status_t LinecardStateBase::set_internal(
     SWSS_LOG_INFO("set %s:%s %s", lai_serialize_object_type(objectType).c_str(),
                   serializedObjectId.c_str(),
                   meta->attridname);
+
+    if (objectType == LAI_OBJECT_TYPE_OA)
+    {
+        OAHandler->setOAAttr(meta, attr);
+        send_linecard_alarm_notification(0x100000000, OAHandler->OA_alarm_type, OAHandler->OA_alarm_info);
+        attrHash = OAHandler->attrHash;
+        OAHandler->OA_alarm_type = LAI_ALARM_TYPE_MAX;
+    }
 
     if (objectType == LAI_OBJECT_TYPE_OTDR &&
         attr->id == LAI_OTDR_ATTR_SCAN &&

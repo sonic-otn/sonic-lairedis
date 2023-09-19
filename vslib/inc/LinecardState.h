@@ -6,6 +6,7 @@ extern "C" {
 
 #include "LaiAttrWrap.h"
 #include "LinecardConfig.h"
+#include "OAEmulator.h"
 
 #include "meta/Meta.h"
 
@@ -122,6 +123,9 @@ namespace laivs
         public:
 
             std::set<std::string> m_otdrOidList;
+
+        public:
+            std::shared_ptr<laivs::OAEmulator> OAHandler;
 
     };
 }
